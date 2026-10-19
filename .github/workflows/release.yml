@@ -3,9 +3,20 @@ name: release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Preview the publish without uploading
+        type: boolean
+        default: true
 
+# The ClawHub workflow's job needs these, and a called job may not ask for
+# more than the caller grants. id-token lets it publish as this repository's
+# trusted publisher.
 permissions:
+  actions: read
   contents: read
+  id-token: write
 
 jobs:
   check:
@@ -16,6 +27,7 @@ jobs:
         with:
           node-version: 24
       - name: Tag matches package.json
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           version=$(node -p "require('./package.json').version")
           if [ "v$version" != "$GITHUB_REF_NAME" ]; then
@@ -33,12 +45,11 @@ jobs:
   clawhub:
     needs: check
     permissions:
+      actions: read
       contents: read
       id-token: write
     uses: openclaw/clawhub/.github/workflows/package-publish.yml@v0.23.3
     with:
       source: architect-xyz/openclaw-liquid-inference@${{ github.ref_name }}
       owner: architect-xyz
-      dry_run: false
-    secrets:
-      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
