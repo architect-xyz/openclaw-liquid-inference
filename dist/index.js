@@ -15,13 +15,21 @@ var MAX_TOKENS = 8192;
 function readConfig(pluginConfig) {
   const baseUrl = pluginConfig?.baseUrl;
   const capUsd = pluginConfig?.capUsd;
+  const extra = pluginConfig?.headers;
+  const headers2 = {};
+  if (extra && typeof extra === "object" && !Array.isArray(extra)) {
+    for (const [name, value] of Object.entries(extra)) {
+      if (typeof value === "string") headers2[name] = value;
+    }
+  }
   return {
     baseUrl: typeof baseUrl === "string" && baseUrl.trim() ? baseUrl.trim() : DEFAULT_BASE_URL,
-    capUsd: typeof capUsd === "number" && Number.isFinite(capUsd) && capUsd > 0 ? capUsd : DEFAULT_CAP_USD
+    capUsd: typeof capUsd === "number" && Number.isFinite(capUsd) && capUsd > 0 ? capUsd : DEFAULT_CAP_USD,
+    headers: headers2
   };
 }
 function headers(config) {
-  return { "X-Title": "OpenClaw", "x-liquid-cap-usd": String(config.capUsd) };
+  return { "X-Title": "OpenClaw", "x-liquid-cap-usd": String(config.capUsd), ...config.headers };
 }
 function model(id) {
   return {

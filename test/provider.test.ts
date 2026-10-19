@@ -10,16 +10,28 @@ import {
   readConfig,
 } from "../src/provider.ts";
 
+const DEFAULTS = { baseUrl: DEFAULT_BASE_URL, capUsd: DEFAULT_CAP_USD, headers: {} };
+
 test("an absent config takes the production exchange and a $1 cap", () => {
-  assert.deepEqual(readConfig(undefined), { baseUrl: DEFAULT_BASE_URL, capUsd: DEFAULT_CAP_USD });
-  assert.deepEqual(readConfig({}), { baseUrl: DEFAULT_BASE_URL, capUsd: DEFAULT_CAP_USD });
+  assert.deepEqual(readConfig(undefined), DEFAULTS);
+  assert.deepEqual(readConfig({}), DEFAULTS);
 });
 
-test("the config sets the cap and the exchange URL", () => {
-  assert.deepEqual(readConfig({ capUsd: 0.25, baseUrl: "http://localhost:8080/v1 " }), {
-    baseUrl: "http://localhost:8080/v1",
-    capUsd: 0.25,
-  });
+test("the config sets the cap, the exchange URL and extra headers", () => {
+  assert.deepEqual(
+    readConfig({
+      capUsd: 0.25,
+      baseUrl: "http://localhost:8080/v1 ",
+      headers: { "x-liquid-pin-offer": "offer-1", bad: 1 },
+    }),
+    { baseUrl: "http://localhost:8080/v1", capUsd: 0.25, headers: { "x-liquid-pin-offer": "offer-1" } },
+  );
+});
+
+test("an extra header with a default's name replaces it", () => {
+  const config = readConfig({ capUsd: 0.25, headers: { "x-liquid-cap-usd": "0.02" } });
+  assert.equal(headers(config)["x-liquid-cap-usd"], "0.02");
+  assert.equal(headers(config)["X-Title"], "OpenClaw");
 });
 
 test("a cap that is not a positive number takes the default", () => {
@@ -29,7 +41,7 @@ test("a cap that is not a positive number takes the default", () => {
 });
 
 test("every request carries the client label and the cap", () => {
-  assert.deepEqual(headers({ baseUrl: DEFAULT_BASE_URL, capUsd: 0.25 }), {
+  assert.deepEqual(headers({ baseUrl: DEFAULT_BASE_URL, capUsd: 0.25, headers: {} }), {
     "X-Title": "OpenClaw",
     "x-liquid-cap-usd": "0.25",
   });

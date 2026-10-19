@@ -62,9 +62,12 @@ output limit of 8,192 tokens. Most offers accept no larger output limit.
 | ------------------------------------------ | ------------------------------------------- | --------------------------------------- |
 | `plugins.entries.liquid.config.capUsd`     | `1`                                         | The most that one request may cost.     |
 | `plugins.entries.liquid.config.baseUrl`    | `https://router.inference.ai.exchange/v1`   | The exchange's OpenAI-compatible endpoint. |
+| `plugins.entries.liquid.config.headers`    | `{}`                                        | Extra headers on every request.         |
 
 Every request also carries `X-Title: OpenClaw`, which labels the client on
-receipts.
+receipts. An extra header with the name of a default header replaces it. See
+[Purchasing rules](https://inference.ai.exchange/docs/rules) for the headers
+the exchange reads.
 
 ## Refusals
 

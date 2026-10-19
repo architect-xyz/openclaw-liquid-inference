@@ -34,6 +34,10 @@
     "baseUrl": {
       "label": "Exchange URL",
       "help": "The exchange's OpenAI-compatible endpoint, with /v1 at the end."
+    },
+    "headers": {
+      "label": "Extra headers",
+      "help": "Headers added to every request, such as a purchasing rule."
     }
   },
   "configSchema": {
@@ -48,6 +52,11 @@
       "baseUrl": {
         "type": "string",
         "description": "The exchange's OpenAI-compatible endpoint. Default https://router.inference.ai.exchange/v1."
+      },
+      "headers": {
+        "type": "object",
+        "additionalProperties": { "type": "string" },
+        "description": "Extra headers on every request, such as a purchasing rule. One with the name of a default header replaces it."
       }
     }
   }

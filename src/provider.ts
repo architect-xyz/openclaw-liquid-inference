@@ -17,6 +17,8 @@ export const MAX_TOKENS = 8192;
 export type LiquidConfig = {
   baseUrl: string;
   capUsd: number;
+  /** Extra request headers. One with the name of a default header replaces it. */
+  headers: Record<string, string>;
 };
 
 export type LiquidModel = {
@@ -40,15 +42,23 @@ export type LiquidProvider = {
 export function readConfig(pluginConfig: Record<string, unknown> | undefined): LiquidConfig {
   const baseUrl = pluginConfig?.baseUrl;
   const capUsd = pluginConfig?.capUsd;
+  const extra = pluginConfig?.headers;
+  const headers: Record<string, string> = {};
+  if (extra && typeof extra === "object" && !Array.isArray(extra)) {
+    for (const [name, value] of Object.entries(extra)) {
+      if (typeof value === "string") headers[name] = value;
+    }
+  }
   return {
     baseUrl: typeof baseUrl === "string" && baseUrl.trim() ? baseUrl.trim() : DEFAULT_BASE_URL,
     capUsd: typeof capUsd === "number" && Number.isFinite(capUsd) && capUsd > 0 ? capUsd : DEFAULT_CAP_USD,
+    headers,
   };
 }
 
-/** The headers on every model request: the client label on receipts, and the cap. */
+/** The headers on every model request: the client label on receipts, the cap, and the extras. */
 export function headers(config: LiquidConfig): Record<string, string> {
-  return { "X-Title": "OpenClaw", "x-liquid-cap-usd": String(config.capUsd) };
+  return { "X-Title": "OpenClaw", "x-liquid-cap-usd": String(config.capUsd), ...config.headers };
 }
 
 // The exchange charges what each request costs, so OpenClaw's own cost
