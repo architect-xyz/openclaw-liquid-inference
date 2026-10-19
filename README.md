@@ -114,4 +114,6 @@ openclaw plugins inspect liquid --runtime --json
 
 Set the version in `package.json`, commit, and push a tag `v<version>`. The
 release workflow checks the build and publishes the package to ClawHub under
-`architect-xyz`. It needs the `CLAWHUB_TOKEN` secret.
+`architect-xyz`. ClawHub trusts the workflow directly, so no secret is needed.
+To preview a release without a tag, run the workflow by hand with its dry-run
+input.
