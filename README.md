@@ -14,11 +14,12 @@ charges for the tokens used.
 ## Install
 
 ```bash
-openclaw plugins install clawhub:@architect-xyz/openclaw-liquid-inference
+openclaw plugins install clawhub:@architect-xyz/openclaw-liquid-inference --accept-capabilities
 printf '%s\n' "$LIQUID_API_KEY" | openclaw models auth paste-api-key --provider liquid --agent main
 openclaw config set agents.defaults.model.primary "liquid/liquid.auto"
 ```
 
+`--accept-capabilities` accepts what the plugin declares: a model provider.
 The second command saves the key in OpenClaw's credential store, so a gateway
 that runs as a service does not need the environment variable. `openclaw
 onboard` also offers Liquid Inference as a provider and asks for the key.
