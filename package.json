@@ -1,0 +1,58 @@
+{
+  "name": "@architect-xyz/openclaw-liquid-inference",
+  "version": "0.1.0",
+  "description": "Liquid Inference as a model provider for OpenClaw",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "model-provider",
+    "liquid-inference"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/architect-xyz/openclaw-liquid-inference.git"
+  },
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "esbuild index.ts --bundle --platform=node --format=esm --target=node24 --external:openclaw --external:\"openclaw/*\" --outfile=dist/index.js",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test \"test/**/*.test.ts\""
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.10.5"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.25.0",
+    "openclaw": "2026.10.5",
+    "typescript": "^5.9.0"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "providers": [
+      "liquid"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.10.5",
+      "minGatewayVersion": "2026.10.5"
+    },
+    "build": {
+      "openclawVersion": "2026.10.5",
+      "pluginSdkVersion": "2026.10.5"
+    }
+  }
+}

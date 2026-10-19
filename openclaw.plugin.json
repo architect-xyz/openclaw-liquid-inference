@@ -1,0 +1,54 @@
+{
+  "id": "liquid",
+  "name": "Liquid Inference",
+  "description": "Liquid Inference model provider: an auction exchange for LLM inference, with a price cap on each request",
+  "categories": ["models"],
+  "providers": ["liquid"],
+  "setup": {
+    "providers": [
+      {
+        "id": "liquid",
+        "envVars": ["LIQUID_API_KEY"]
+      }
+    ]
+  },
+  "providerAuthChoices": [
+    {
+      "provider": "liquid",
+      "method": "api-key",
+      "choiceId": "liquid-api-key",
+      "choiceLabel": "Liquid Inference API key",
+      "groupId": "liquid",
+      "groupLabel": "Liquid Inference",
+      "optionKey": "liquidApiKey",
+      "cliFlag": "--liquid-api-key",
+      "cliOption": "--liquid-api-key <key>",
+      "cliDescription": "Liquid Inference API key"
+    }
+  ],
+  "uiHints": {
+    "capUsd": {
+      "label": "Cap per request (USD)",
+      "help": "The most that one model request may cost. A task sends several requests, so this does not limit the total charge."
+    },
+    "baseUrl": {
+      "label": "Exchange URL",
+      "help": "The exchange's OpenAI-compatible endpoint, with /v1 at the end."
+    }
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "capUsd": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "description": "The most that one model request may cost, in USD. Default 1."
+      },
+      "baseUrl": {
+        "type": "string",
+        "description": "The exchange's OpenAI-compatible endpoint. Default https://router.inference.ai.exchange/v1."
+      }
+    }
+  }
+}
