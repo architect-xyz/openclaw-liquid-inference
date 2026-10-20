@@ -5,6 +5,10 @@ on:
     tags: ["v*"]
   workflow_dispatch:
     inputs:
+      ref:
+        description: The tag to publish, such as v0.1.1 (default is this branch)
+        type: string
+        default: ""
       dry_run:
         description: Preview the publish without uploading
         type: boolean
@@ -49,7 +53,8 @@ jobs:
       contents: read
       id-token: write
     uses: openclaw/clawhub/.github/workflows/package-publish.yml@v0.23.3
+    # ClawHub's trusted publishing works on a dispatched run only, and it
+    # refuses an owner input: the trusted publisher record names the owner.
     with:
-      source: architect-xyz/openclaw-liquid-inference@${{ github.ref_name }}
-      owner: architect-xyz
+      source: architect-xyz/openclaw-liquid-inference@${{ inputs.ref || github.ref_name }}
       dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
