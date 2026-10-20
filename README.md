@@ -107,7 +107,7 @@ To test the packaged install:
 
 ```bash
 npm pack --pack-destination /tmp
-openclaw plugins install npm-pack:/tmp/architect-xyz-openclaw-liquid-inference-0.1.2.tgz --force
+openclaw plugins install npm-pack:/tmp/architect-xyz-openclaw-liquid-inference-0.1.3.tgz --force
 openclaw plugins inspect liquid --runtime --json
 ```
 

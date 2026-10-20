@@ -23,7 +23,7 @@ export default definePluginEntry({
     api.registerProvider({
       id: PROVIDER,
       label: "Liquid Inference",
-      docsPath: "/providers/liquid-inference",
+      docsPath: "https://inference.ai.exchange/docs/connect-openclaw",
       envVars: [API_KEY_ENV],
 
       auth: [
