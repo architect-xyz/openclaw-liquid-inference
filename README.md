@@ -79,7 +79,10 @@ the exchange reads.
 | `400`    | `eligibility.excluded` in the body names the rule each offer did not meet. |
 
 OpenClaw retries `429` and `503`. A `402` disables the key for a short
-window; adding credit does not end the window. See
+window; adding credit does not end the window.
+
+A newer OpenClaw refuses `openclaw config set` while a gateway runs. Run
+`openclaw gateway stop` first, then start the gateway again. See
 [the OpenClaw guide](https://inference.ai.exchange/docs/connect-openclaw) for
 fallbacks, retries and troubleshooting.
 
