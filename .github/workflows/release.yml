@@ -53,8 +53,10 @@ jobs:
       contents: read
       id-token: write
     uses: openclaw/clawhub/.github/workflows/package-publish.yml@v0.23.3
-    # ClawHub's trusted publishing works on a dispatched run only, and it
-    # refuses an owner input: the trusted publisher record names the owner.
+    # ClawHub's trusted publishing works on a dispatched run only, so a tag
+    # push previews. It refuses an owner input, because the trusted publisher
+    # record names the owner, and the published commit must be the commit the
+    # run checked out, so the tag must be at the head of main.
     with:
       source: architect-xyz/openclaw-liquid-inference@${{ inputs.ref || github.ref_name }}
-      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      dry_run: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run }}
