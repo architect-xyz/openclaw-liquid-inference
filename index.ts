@@ -55,11 +55,18 @@ export default definePluginEntry({
       // Any name on the exchange works as liquid/<name>: an exact model, a
       // router model or a preset. The exchange resolves it on each request.
       resolveDynamicModel: (ctx) => ({
-        ...model(ctx.modelId),
+        ...model(ctx.modelId, config),
         provider: PROVIDER,
         api: API,
         baseUrl: config.baseUrl,
-        headers: headers(config),
+      }),
+
+      // The gateway's model registry keeps a catalog model's headers apart
+      // from the model, and the request takes them from the model. This puts
+      // them back. A header set on the model in the config wins.
+      normalizeResolvedModel: (ctx) => ({
+        ...ctx.model,
+        headers: { ...headers(config), ...ctx.model.headers },
       }),
     });
   },

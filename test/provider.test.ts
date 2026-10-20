@@ -58,10 +58,11 @@ test("the catalog starts with liquid.auto on the Chat Completions transport", ()
   );
 });
 
-test("a model keeps its name and stays within the output limit that offers accept", () => {
-  const m = model("kimi-k3");
+test("a model keeps its name, carries the headers and stays within the output limit that offers accept", () => {
+  const m = model("kimi-k3", { ...DEFAULTS, capUsd: 0.25 });
   assert.equal(m.id, "kimi-k3");
   assert.equal(m.name, "kimi-k3");
   assert.equal(m.maxTokens, 8192);
   assert.deepEqual(m.input, ["text"]);
+  assert.equal(m.headers["x-liquid-cap-usd"], "0.25");
 });

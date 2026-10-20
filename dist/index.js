@@ -31,7 +31,7 @@ function readConfig(pluginConfig) {
 function headers(config) {
   return { "X-Title": "OpenClaw", "x-liquid-cap-usd": String(config.capUsd), ...config.headers };
 }
-function model(id) {
+function model(id, config) {
   return {
     id,
     name: id,
@@ -39,7 +39,8 @@ function model(id) {
     input: ["text"],
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
     contextWindow: CONTEXT_WINDOW,
-    maxTokens: MAX_TOKENS
+    maxTokens: MAX_TOKENS,
+    headers: headers(config)
   };
 }
 function buildProvider(config) {
@@ -47,7 +48,7 @@ function buildProvider(config) {
     baseUrl: config.baseUrl,
     api: API,
     headers: headers(config),
-    models: [model(DEFAULT_MODEL)]
+    models: [model(DEFAULT_MODEL, config)]
   };
 }
 
@@ -91,11 +92,17 @@ var index_default = definePluginEntry({
       // Any name on the exchange works as liquid/<name>: an exact model, a
       // router model or a preset. The exchange resolves it on each request.
       resolveDynamicModel: (ctx) => ({
-        ...model(ctx.modelId),
+        ...model(ctx.modelId, config),
         provider: PROVIDER,
         api: API,
-        baseUrl: config.baseUrl,
-        headers: headers(config)
+        baseUrl: config.baseUrl
+      }),
+      // The gateway's model registry keeps a catalog model's headers apart
+      // from the model, and the request takes them from the model. This puts
+      // them back. A header set on the model in the config wins.
+      normalizeResolvedModel: (ctx) => ({
+        ...ctx.model,
+        headers: { ...headers(config), ...ctx.model.headers }
       })
     });
   }

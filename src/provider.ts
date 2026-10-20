@@ -29,6 +29,7 @@ export type LiquidModel = {
   cost: { input: number; output: number; cacheRead: number; cacheWrite: number };
   contextWindow: number;
   maxTokens: number;
+  headers: Record<string, string>;
 };
 
 export type LiquidProvider = {
@@ -63,7 +64,9 @@ export function headers(config: LiquidConfig): Record<string, string> {
 
 // The exchange charges what each request costs, so OpenClaw's own cost
 // estimate stays at zero. The receipt holds the charge.
-export function model(id: string): LiquidModel {
+// The headers are on the model as well as on the provider: the gateway
+// drops a catalog provider's headers and keeps a model's.
+export function model(id: string, config: LiquidConfig): LiquidModel {
   return {
     id,
     name: id,
@@ -72,6 +75,7 @@ export function model(id: string): LiquidModel {
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
     contextWindow: CONTEXT_WINDOW,
     maxTokens: MAX_TOKENS,
+    headers: headers(config),
   };
 }
 
@@ -80,6 +84,6 @@ export function buildProvider(config: LiquidConfig): LiquidProvider {
     baseUrl: config.baseUrl,
     api: API,
     headers: headers(config),
-    models: [model(DEFAULT_MODEL)],
+    models: [model(DEFAULT_MODEL, config)],
   };
 }
