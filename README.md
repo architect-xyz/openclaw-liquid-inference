@@ -115,9 +115,12 @@ openclaw plugins inspect liquid --runtime --json
 
 ## Release
 
-Set the version in `package.json`, commit to `main`, and push a tag
-`v<version>` at that commit. The tag run checks the build and previews the
-publish. Then publish from the Actions tab: run the release workflow on
-`main` with `ref` set to the tag and `dry_run` off. ClawHub trusts the
-dispatched run directly, so no secret is needed, and it requires the tag to
-be the head of `main`.
+Set the version in `package.json`, commit, and push a tag `v<version>`. The
+tag run checks the build and previews the publish. Then publish from the
+Actions tab: run the release workflow with the tag selected as the branch or
+tag to run on, and `dry_run` off. ClawHub trusts the dispatched run directly,
+so no secret is needed.
+
+```bash
+gh workflow run release.yml --ref v<version> -f dry_run=false
+```

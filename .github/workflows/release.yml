@@ -5,10 +5,6 @@ on:
     tags: ["v*"]
   workflow_dispatch:
     inputs:
-      ref:
-        description: The tag to publish, such as v0.1.1 (default is this branch)
-        type: string
-        default: ""
       dry_run:
         description: Preview the publish without uploading
         type: boolean
@@ -54,9 +50,11 @@ jobs:
       id-token: write
     uses: openclaw/clawhub/.github/workflows/package-publish.yml@v0.23.3
     # ClawHub's trusted publishing works on a dispatched run only, so a tag
-    # push previews. It refuses an owner input, because the trusted publisher
-    # record names the owner, and the published commit must be the commit the
-    # run checked out, so the tag must be at the head of main.
+    # push previews and the publish is a run dispatched on the tag. It refuses
+    # an owner input, because the trusted publisher record names the owner.
     with:
-      source: architect-xyz/openclaw-liquid-inference@${{ inputs.ref || github.ref_name }}
+      source: architect-xyz/openclaw-liquid-inference@${{ github.ref_name }}
+      # The CLI records the bare tag name; ClawHub compares the ref with the
+      # OIDC claim, which is the full ref.
+      source_ref: ${{ github.ref }}
       dry_run: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run }}
