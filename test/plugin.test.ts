@@ -44,7 +44,8 @@ test("the catalog is absent without a key", async () => {
 });
 
 test("the catalog carries the key, the headers and the configured cap", async () => {
-  const provider = registerWith({ capUsd: 0.5 });
+  // An unreachable exchange leaves the static liquid.auto in the catalog.
+  const provider = registerWith({ capUsd: 0.5, baseUrl: "http://127.0.0.1:9/v1" });
   const result = (await provider.catalog!.run({
     resolveProviderApiKey: () => ({ apiKey: "test-key" }),
   })) as {

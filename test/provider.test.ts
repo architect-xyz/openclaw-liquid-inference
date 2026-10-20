@@ -65,4 +65,5 @@ test("a model keeps its name, carries the headers and stays within the output li
   assert.equal(m.maxTokens, 8192);
   assert.deepEqual(m.input, ["text"]);
   assert.equal(m.headers["x-liquid-cap-usd"], "0.25");
+  assert.equal(m.compat.supportsUsageInStreaming, true);
 });

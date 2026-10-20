@@ -1,6 +1,7 @@
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createProviderApiKeyAuthMethod } from "openclaw/plugin-sdk/provider-auth";
 
+import { discoverModels } from "./src/catalog.ts";
 import {
   API,
   API_KEY_ENV,
@@ -48,7 +49,7 @@ export default definePluginEntry({
           if (!apiKey) {
             return null;
           }
-          return { provider: { ...buildProvider(config), apiKey } };
+          return { provider: { ...buildProvider(config), models: await discoverModels(config), apiKey } };
         },
       },
 

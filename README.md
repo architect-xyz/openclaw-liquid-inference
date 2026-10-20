@@ -45,17 +45,15 @@ the console shows the charge of each request, labelled OpenClaw.
 
 ## Models
 
-`liquid/liquid.auto` lets the exchange choose a model for each request. Any
-other name on the exchange works as `liquid/<name>`: an exact model such as
-`liquid/kimi-k3`, or a preset that you saved in the console. The exchange
-resolves the name on each request. To list the names:
+`liquid/liquid.auto` lets the exchange choose a model for each request. The
+plugin reads the exchange's model list at start, so `openclaw models list`
+shows every model on the exchange, with its context window and whether it
+takes images. Any other name also works as `liquid/<name>`, such as a preset
+that you saved in the console. The exchange resolves the name on each
+request.
 
-```bash
-curl https://router.inference.ai.exchange/v1/models
-```
-
-Each model is registered with a context window of 128,000 tokens and an
-output limit of 8,192 tokens. Most offers accept no larger output limit.
+Each model has an output limit of 8,192 tokens. Most offers accept no larger
+output limit.
 
 ## Configuration
 
@@ -109,7 +107,7 @@ To test the packaged install:
 
 ```bash
 npm pack --pack-destination /tmp
-openclaw plugins install npm-pack:/tmp/architect-xyz-openclaw-liquid-inference-0.1.1.tgz --force
+openclaw plugins install npm-pack:/tmp/architect-xyz-openclaw-liquid-inference-0.1.2.tgz --force
 openclaw plugins inspect liquid --runtime --json
 ```
 

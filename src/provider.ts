@@ -25,11 +25,12 @@ export type LiquidModel = {
   id: string;
   name: string;
   reasoning: boolean;
-  input: ["text"];
+  input: Array<"text" | "image">;
   cost: { input: number; output: number; cacheRead: number; cacheWrite: number };
   contextWindow: number;
   maxTokens: number;
   headers: Record<string, string>;
+  compat: { supportsUsageInStreaming: boolean };
 };
 
 export type LiquidProvider = {
@@ -76,6 +77,9 @@ export function model(id: string, config: LiquidConfig): LiquidModel {
     contextWindow: CONTEXT_WINDOW,
     maxTokens: MAX_TOKENS,
     headers: headers(config),
+    // The exchange sends the usage in the stream when asked, and OpenClaw
+    // asks only with this flag. Without it, OpenClaw estimates the context.
+    compat: { supportsUsageInStreaming: true },
   };
 }
 

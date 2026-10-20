@@ -1,6 +1,6 @@
 {
   "name": "@architect-xyz/openclaw-liquid-inference",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Liquid Inference as a model provider for OpenClaw",
   "license": "MIT",
   "type": "module",

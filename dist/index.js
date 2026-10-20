@@ -40,7 +40,10 @@ function model(id, config) {
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
     contextWindow: CONTEXT_WINDOW,
     maxTokens: MAX_TOKENS,
-    headers: headers(config)
+    headers: headers(config),
+    // The exchange sends the usage in the stream when asked, and OpenClaw
+    // asks only with this flag. Without it, OpenClaw estimates the context.
+    compat: { supportsUsageInStreaming: true }
   };
 }
 function buildProvider(config) {
@@ -50,6 +53,42 @@ function buildProvider(config) {
     headers: headers(config),
     models: [model(DEFAULT_MODEL, config)]
   };
+}
+
+// src/catalog.ts
+var DISCOVERY_TIMEOUT_MS = 5e3;
+function isExchangeModel(value) {
+  return typeof value === "object" && value !== null && typeof value.id === "string";
+}
+function positive(value) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : void 0;
+}
+function mapModels(data, config) {
+  if (!Array.isArray(data)) return [];
+  const entries = data.filter(isExchangeModel);
+  const routers = entries.filter((e) => e.match_type === "router");
+  const exact = entries.filter((e) => e.match_type !== "router").sort((a, b) => a.id.localeCompare(b.id));
+  return [...routers, ...exact].map((e) => ({
+    ...model(e.id, config),
+    // A router buys a different model on each request, so it keeps the
+    // window in common use. An exact model has its own.
+    contextWindow: e.match_type === "router" ? CONTEXT_WINDOW : positive(e.max_input_tokens) ?? CONTEXT_WINDOW,
+    input: e.liquid_supported_parameters?.includes("input.image") ? ["text", "image"] : ["text"]
+  }));
+}
+async function discoverModels(config, fetchFn = fetch) {
+  const fallback = [model(DEFAULT_MODEL, config)];
+  try {
+    const response = await fetchFn(`${config.baseUrl}/models`, {
+      signal: AbortSignal.timeout(DISCOVERY_TIMEOUT_MS)
+    });
+    if (!response.ok) return fallback;
+    const body = await response.json();
+    const models = mapModels(body.data, config);
+    return models.length > 0 ? models : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 // index.ts
@@ -86,7 +125,7 @@ var index_default = definePluginEntry({
           if (!apiKey) {
             return null;
           }
-          return { provider: { ...buildProvider(config), apiKey } };
+          return { provider: { ...buildProvider(config), models: await discoverModels(config), apiKey } };
         }
       },
       // Any name on the exchange works as liquid/<name>: an exact model, a
